@@ -87,12 +87,12 @@ export default function Game() {
             <Text style={styles.emojis}>{currentQuiz.emojis}</Text>
           </View>
           <Text style={styles.question}>{currentQuiz.question}</Text>
-          <View style={styles.flowerContainer}>
-            {[1, 2, 3, 4, 5].map((i) => (
-              <Text key={i} style={styles.flower}>🌸</Text>
-            ))}
-          </View>
-        </View>
+      <View style={styles.flowerContainer}>
+        {[1, 2, 3, 4].map((i) => (
+          <Image key={i} source={require('../assets/images/sakura.svg')} style={styles.flower} />
+        ))}
+      </View>
+    </View>
       ) : (
         <View style={styles.answerContainer}>
           <View style={styles.header}>
@@ -107,9 +107,9 @@ export default function Game() {
             <Text style={styles.nextButtonText}>NEXT</Text>
           </TouchableOpacity>
           <View style={styles.flowerContainer}>
-            {[1, 2, 3, 4, 5].map((i) => (
-              <Text key={i} style={styles.flower}>🌸</Text>
-            ))}
+          {[1, 2, 3, 4].map((i) => (
+          <Image key={i} source={require('../assets/images/sakura.svg')} style={styles.flower} />
+        ))}
           </View>
         </View>
       )}
@@ -196,14 +196,17 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   flowerContainer: {
+    backgroundColor: '#D3F99D',
     flexDirection: 'row',
     justifyContent: 'space-around',
     position: 'absolute',
     bottom: 20,
-    left: 0,
-    right: 0,
+    width: '100%',
+    height: '10%',
   },
   flower: {
-    fontSize: 24,
+    width: 40,
+    height: 40,
   },
+  
 });

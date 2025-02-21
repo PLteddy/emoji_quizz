@@ -26,8 +26,8 @@ export default function Home() {
     <View style={[styles.container, containerStyle]}>
       <Text style={styles.title}>ONIMOJY</Text>
       <View style={styles.mascotContainer}>
-        <Text style={styles.mascot}>😠</Text>
-        <Text style={styles.mascot}>😊</Text>
+      <Image source={require('../assets/images/angry.svg')} style={styles.mascot} />
+      <Image source={require('../assets/images/happy.svg')} style={styles.mascot} />
       </View>
       <TouchableOpacity style={styles.startButton} onPress={() => router.push('/game')}>
         <Text style={styles.startButtonText}>START</Text>
@@ -40,7 +40,7 @@ export default function Home() {
       </TouchableOpacity>
       <View style={styles.flowerContainer}>
         {[1, 2, 3, 4].map((i) => (
-          <Text key={i} style={styles.flower}>🌸</Text>
+          <Image key={i} source={require('../assets/images/sakura.svg')} style={styles.flower} />
         ))}
       </View>
     </View>
@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
     right: 0,
   },
   flower: {
-    fontSize: 24,
+    width: 40,
+    height: 40,
   },
 });
