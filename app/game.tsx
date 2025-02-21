@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Platform, Dimensions, ViewStyle } from 'react-native';
 import { useState, useEffect } from 'react';
-import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+
 
 const QUIZ_DATA = [
   {
@@ -19,14 +20,13 @@ const QUIZ_DATA = [
   }
 ];
 
-export default function Home() {
-  const [gameStarted, setGameStarted] = useState(false);
+export default function Game() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [timeLeft, setTimeLeft] = useState(15);
   const [showAnswer, setShowAnswer] = useState(false);
 
   useEffect(() => {
-    if (gameStarted && !showAnswer && timeLeft > 0) {
+    if (!showAnswer && timeLeft > 0) {
       const timer = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
@@ -37,14 +37,7 @@ export default function Home() {
     if (timeLeft === 0 && !showAnswer) {
       setShowAnswer(true);
     }
-  }, [gameStarted, timeLeft, showAnswer]);
-
-  const startGame = () => {
-    setGameStarted(true);
-    setTimeLeft(15);
-    setCurrentQuestion(0);
-    setShowAnswer(false);
-  };
+  }, [timeLeft, showAnswer]);
 
   const nextQuestion = () => {
     if (currentQuestion < QUIZ_DATA.length - 1) {
@@ -52,10 +45,9 @@ export default function Home() {
       setTimeLeft(15);
       setShowAnswer(false);
     } else {
-      setGameStarted(false);
+      router.replace('/');
     }
   };
-
   const { width, height } = Dimensions.get('window');
 
   const containerStyle: ViewStyle = Platform.select({
@@ -74,27 +66,6 @@ export default function Home() {
     },
   }) as ViewStyle; // 👈 Force TypeScript à considérer le retour comme un ViewStyle valide
   
-
-  if (!gameStarted) {
-    return (
-      <View style={[styles.container, containerStyle]}>
-        <Text style={styles.title}>ONIMOJY</Text>
-        <View style={styles.mascotContainer}>
-          <Text style={styles.mascot}>😠</Text>
-          <Text style={styles.mascot}>😊</Text>
-        </View>
-        <TouchableOpacity style={styles.startButton} onPress={startGame}>
-          <Text style={styles.startButtonText}>START</Text>
-        </TouchableOpacity>
-        <View style={styles.flowerContainer}>
-          {[1, 2, 3, 4].map((i) => (
-            <Text key={i} style={styles.flower}>🌸</Text>
-          ))}
-        </View>
-      </View>
-    );
-  }
-
   const currentQuiz = QUIZ_DATA[currentQuestion];
 
   return (
@@ -102,13 +73,15 @@ export default function Home() {
       {!showAnswer ? (
         <View style={styles.gameContainer}>
           <View style={styles.header}>
-            <TouchableOpacity onPress={() => setGameStarted(false)}>
+            <TouchableOpacity onPress={() => router.back()}>
               <Ionicons name="chevron-back" size={24} color="#FF9999" />
             </TouchableOpacity>
             <View style={styles.timerContainer}>
               <Text style={styles.timer}>{timeLeft}</Text>
             </View>
-            <Ionicons name="settings" size={24} color="#FF9999" />
+            <TouchableOpacity onPress={() => router.push('/settings')}>
+              <Ionicons name="settings" size={24} color="#FF9999" />
+            </TouchableOpacity>
           </View>
           <View style={styles.emojiContainer}>
             <Text style={styles.emojis}>{currentQuiz.emojis}</Text>
@@ -123,7 +96,7 @@ export default function Home() {
       ) : (
         <View style={styles.answerContainer}>
           <View style={styles.header}>
-            <TouchableOpacity onPress={() => setGameStarted(false)}>
+            <TouchableOpacity onPress={() => router.back()}>
               <Ionicons name="chevron-back" size={24} color="#FF9999" />
             </TouchableOpacity>
           </View>
@@ -149,36 +122,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFF5E6',
     padding: 20,
-  },
-  title: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#333',
-    textAlign: 'center',
-    marginTop: 60,
-  },
-  mascotContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 40,
-  },
-  mascot: {
-    fontSize: 64,
-    marginHorizontal: 10,
-  },
-  startButton: {
-    backgroundColor: '#FFB3B3',
-    paddingHorizontal: 40,
-    paddingVertical: 20,
-    borderRadius: 30,
-    alignSelf: 'center',
-    marginTop: 40,
-  },
-  startButtonText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
   },
   gameContainer: {
     flex: 1,

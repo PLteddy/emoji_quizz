@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Switch, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Platform, Dimensions, ViewStyle, Modal, Switch } from 'react-native';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
 export default function Settings() {
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -11,9 +12,31 @@ export default function Settings() {
   const [showCreditsModal, setShowCreditsModal] = useState(false);
   const [language, setLanguage] = useState('fr');
 
+  const { width, height } = Dimensions.get('window');
+
+  const containerStyle: ViewStyle = Platform.select({
+    web: {
+      maxWidth: 500,
+      width: '100%', // OK sur le web
+      height: '100vh', // OK sur le web
+      marginLeft: 'auto', // OK sur le web
+      marginRight: 'auto', // OK sur le web
+    },
+    default: {
+      maxWidth: 500,
+      width, // Largeur de l'écran sur mobile
+      height, // Hauteur de l'écran sur mobile
+      alignSelf: 'center', // Remplace margin: 'auto'
+    },
+  }) as ViewStyle; // 👈 Force TypeScript à considérer le retour comme un ViewStyle valide
+  
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="chevron-back" size={24} color="#FF9999" />
+        </TouchableOpacity>
         <View style={styles.iconContainer}>
           <Ionicons name="happy" size={24} color="#FF9999" />
         </View>
@@ -23,6 +46,7 @@ export default function Settings() {
       <View style={styles.settingItem}>
         <View style={styles.settingLeft}>
           <Ionicons name="musical-note" size={24} color="#FF9999" />
+          <Text style={styles.settingText}>Son</Text>
         </View>
         <Switch
           value={soundEnabled}
@@ -35,6 +59,7 @@ export default function Settings() {
       <View style={styles.settingItem}>
         <View style={styles.settingLeft}>
           <Ionicons name="volume-high" size={24} color="#FF9999" />
+          <Text style={styles.settingText}>Vibration</Text>
         </View>
         <Switch
           value={vibrationEnabled}
@@ -47,6 +72,7 @@ export default function Settings() {
       <View style={styles.settingItem}>
         <View style={styles.settingLeft}>
           <Ionicons name="notifications" size={24} color="#FF9999" />
+          <Text style={styles.settingText}>Notifications</Text>
         </View>
         <Switch
           value={notificationsEnabled}
@@ -132,12 +158,10 @@ export default function Settings() {
         </View>
       </Modal>
 
-      <View style={styles.footer}>
-        <View style={styles.flowerContainer}>
-          {[1, 2, 3, 4, 5].map((i) => (
-            <Text key={i} style={styles.flower}>🌸</Text>
-          ))}
-        </View>
+      <View style={styles.flowerContainer}>
+        {[1, 2, 3, 4, 5].map((i) => (
+          <Text key={i} style={styles.flower}>🌸</Text>
+        ))}
       </View>
     </View>
   );
@@ -152,8 +176,11 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 60,
+    marginTop: 40,
     marginBottom: 40,
+  },
+  backButton: {
+    marginRight: 10,
   },
   iconContainer: {
     marginRight: 10,
@@ -174,6 +201,11 @@ const styles = StyleSheet.create({
   settingLeft: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  settingText: {
+    marginLeft: 10,
+    fontSize: 18,
+    color: '#333',
   },
   button: {
     backgroundColor: '#FFB3B3',
@@ -203,6 +235,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 15,
     width: '80%',
+    maxWidth: 400,
   },
   modalTitle: {
     fontSize: 24,
@@ -244,16 +277,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 10,
-  },
   flowerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    position: 'absolute',
+    bottom: 20,
+    left: 0,
+    right: 0,
   },
   flower: {
     fontSize: 24,
