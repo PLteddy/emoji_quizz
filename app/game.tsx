@@ -1,22 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Platform, Dimensions, ViewStyle } from 'react-native';
-import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
-
 const QUIZ_DATA = [
   {
-    emojis: '🧜‍♀️🐠🌊',
-    question: 'Quel est ce film Disney ?',
-    answer: 'La Petite Sirène',
-    image: 'https://images.unsplash.com/photo-1597720364267-8df7e1b3f25a?w=800&auto=format&fit=crop'
+    emojis: [
+      require("../assets/images/femme.svg"),
+      require("../assets/images/archeologue.svg"),
+      require("../assets/images/piochet.svg"),
+    ],
+    question: "Quel est ce Jeu Vidéo ?",
+    answer: "The legend of zelda",
+    image: "https://cdn.pixabay.com/photo/2024/07/14/14/42/woman-8894656_1280.jpg",
   },
   {
-    emojis: '🧚‍♂️👦🏴‍☠️',
-    question: 'Quel est ce film ?',
+    emojis:  [
+      require("../assets/images/dinosaure.svg"),
+      require("../assets/images/arc.svg"),
+      require("../assets/images/tribal.svg"),
+    ],
+    question: 'Quel est ce Jeu vidéo?',
     answer: 'Peter Pan',
-    image: 'https://images.unsplash.com/photo-1608274444009-e21f2ff48f53?w=800&auto=format&fit=crop'
+    image: 'https://cdn.pixabay.com/photo/2024/07/14/14/42/woman-8894656_1280.jpg'
   }
 ];
 
@@ -30,10 +36,8 @@ export default function Game() {
       const timer = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
-
       return () => clearInterval(timer);
     }
-
     if (timeLeft === 0 && !showAnswer) {
       setShowAnswer(true);
     }
@@ -48,23 +52,23 @@ export default function Game() {
       router.replace('/');
     }
   };
+  
   const { width, height } = Dimensions.get('window');
-
   const containerStyle: ViewStyle = Platform.select({
     web: {
       maxWidth: 500,
-      width: '100%', // OK sur le web
-      height: '100vh', // OK sur le web
-      marginLeft: 'auto', // OK sur le web
-      marginRight: 'auto', // OK sur le web
+      width: '100%',
+      height: '100vh',
+      marginLeft: 'auto',
+      marginRight: 'auto',
     },
     default: {
       maxWidth: 500,
-      width, // Largeur de l'écran sur mobile
-      height, // Hauteur de l'écran sur mobile
-      alignSelf: 'center', // Remplace margin: 'auto'
+      width,
+      height,
+      alignSelf: 'center',
     },
-  }) as ViewStyle; // 👈 Force TypeScript à considérer le retour comme un ViewStyle valide
+  }) as ViewStyle;
   
   const currentQuiz = QUIZ_DATA[currentQuestion];
 
@@ -84,15 +88,20 @@ export default function Game() {
             </TouchableOpacity>
           </View>
           <View style={styles.emojiContainer}>
-            <Text style={styles.emojis}>{currentQuiz.emojis}</Text>
+            {Array.isArray(currentQuiz.emojis) ? (
+              currentQuiz.emojis.map((emoji, index) => (
+                <Image 
+                  key={index}
+                  source={emoji} 
+                  style={styles.emojis} 
+                />
+              ))
+            ) : (
+              <Text style={styles.emojis}>{currentQuiz.emojis}</Text>
+            )}
           </View>
           <Text style={styles.question}>{currentQuiz.question}</Text>
-      <View style={styles.flowerContainer}>
-        {[1, 2, 3, 4].map((i) => (
-          <Image key={i} source={require('../assets/images/sakura.svg')} style={styles.flower} />
-        ))}
-      </View>
-    </View>
+        </View>
       ) : (
         <View style={styles.answerContainer}>
           <View style={styles.header}>
@@ -102,21 +111,22 @@ export default function Game() {
           </View>
           <Image source={{ uri: currentQuiz.image }} style={styles.movieImage} />
           <Text style={styles.answerText}>C'ÉTAIT:</Text>
-          <Text style={styles.movieTitle}>"{currentQuiz.answer}"</Text>
+          <Text style={styles.movieTitle}>
+            "{currentQuiz.answer}"
+          </Text>
           <TouchableOpacity style={styles.nextButton} onPress={nextQuestion}>
             <Text style={styles.nextButtonText}>NEXT</Text>
           </TouchableOpacity>
-          <View style={styles.flowerContainer}>
-          {[1, 2, 3, 4].map((i) => (
-          <Image key={i} source={require('../assets/images/sakura.svg')} style={styles.flower} />
-        ))}
-          </View>
         </View>
       )}
+            <View style={styles.flowerContainer}>
+              {[1, 2, 3, 4].map((i) => (
+                <Image key={i} source={require('../assets/images/sakura.svg')} style={styles.flower} />
+              ))}
+            </View>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -146,19 +156,22 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   emojiContainer: {
-    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     alignItems: 'center',
-    justifyContent: 'center',
+    marginVertical: 20,
+    marginBottom: 100,
+    marginTop: 100,
   },
   emojis: {
-    fontSize: 64,
-    marginBottom: 20,
+//J'ai laissé vide ici au cas où on a besoin de modifier quelques choses chez les emojis.
+//Ne pas faire width et height ça croppe les images on en a pas besoin.
   },
   question: {
     fontSize: 24,
     color: '#333',
     textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: 10,
   },
   answerContainer: {
     flex: 1,
@@ -188,7 +201,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 25,
     alignSelf: 'center',
-    marginTop: 20,
+    marginTop: 5,
   },
   nextButtonText: {
     fontSize: 18,
@@ -196,7 +209,6 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   flowerContainer: {
-    backgroundColor: '#D3F99D',
     flexDirection: 'row',
     justifyContent: 'space-around',
     position: 'absolute',

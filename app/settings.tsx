@@ -159,8 +159,8 @@ export default function Settings() {
       </Modal>
 
       <View style={styles.flowerContainer}>
-        {[1, 2, 3, 4, 5].map((i) => (
-          <Text key={i} style={styles.flower}>🌸</Text>
+        {[1, 2, 3, 4].map((i) => (
+          <Image key={i} source={require('../assets/images/sakura.svg')} style={styles.flower} />
         ))}
       </View>
     </View>
@@ -286,6 +286,7 @@ const styles = StyleSheet.create({
     right: 0,
   },
   flower: {
-    fontSize: 24,
+    width: 40,
+    height: 40,
   },
 });
