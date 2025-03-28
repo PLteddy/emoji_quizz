@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, Platform, Dimensions, 
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
+// Données des questions du quiz
 const QUIZ_DATA = [
   {
     emojis: [
@@ -27,32 +28,36 @@ const QUIZ_DATA = [
 ];
 
 export default function Game() {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(15);
-  const [showAnswer, setShowAnswer] = useState(false);
+  // États du composant
+  const [currentQuestion, setCurrentQuestion] = useState(0); // Index de la question actuelle
+  const [timeLeft, setTimeLeft] = useState(15); // Temps restant pour répondre
+  const [showAnswer, setShowAnswer] = useState(false); // Afficher ou non la réponse
 
+  // Effet pour gérer le timer
   useEffect(() => {
     if (!showAnswer && timeLeft > 0) {
       const timer = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
-      return () => clearInterval(timer);
+      return () => clearInterval(timer); // Nettoyage du timer
     }
     if (timeLeft === 0 && !showAnswer) {
-      setShowAnswer(true);
+      setShowAnswer(true); // Affiche la réponse quand le temps est écoulé
     }
   }, [timeLeft, showAnswer]);
 
+  // Passe à la question suivante ou retourne à l'accueil
   const nextQuestion = () => {
     if (currentQuestion < QUIZ_DATA.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
       setTimeLeft(15);
       setShowAnswer(false);
     } else {
-      router.replace('/');
+      router.replace('/'); // Retour à l'accueil quand le quiz est fini
     }
   };
   
+  // Adaptation du style selon la plateforme
   const { width, height } = Dimensions.get('window');
   const containerStyle: ViewStyle = Platform.select({
     web: {
@@ -70,11 +75,14 @@ export default function Game() {
     },
   }) as ViewStyle;
   
+  // Récupère la question actuelle
   const currentQuiz = QUIZ_DATA[currentQuestion];
 
   return (
     <View style={[styles.container, containerStyle]}>
+      {/* Affichage conditionnel : question ou réponse */}
       {!showAnswer ? (
+        // Vue pendant le jeu (question)
         <View style={styles.gameContainer}>
           <View style={styles.header}>
             <TouchableOpacity onPress={() => router.back()}>
@@ -87,6 +95,7 @@ export default function Game() {
               <Ionicons name="settings" size={24} color="#FF9999" />
             </TouchableOpacity>
           </View>
+          
           <View style={styles.emojiContainer}>
             {Array.isArray(currentQuiz.emojis) ? (
               currentQuiz.emojis.map((emoji, index) => (
@@ -103,6 +112,7 @@ export default function Game() {
           <Text style={styles.question}>{currentQuiz.question}</Text>
         </View>
       ) : (
+        // Vue après réponse
         <View style={styles.answerContainer}>
           <View style={styles.header}>
             <TouchableOpacity onPress={() => router.back()}>
@@ -119,14 +129,18 @@ export default function Game() {
           </TouchableOpacity>
         </View>
       )}
-            <View style={styles.flowerContainer}>
-              {[1, 2, 3, 4].map((i) => (
-                <Image key={i} source={require('../assets/images/sakura.svg')} style={styles.flower} />
-              ))}
-            </View>
+      
+      {/* Fleurs décoratives en bas de page */}
+      <View style={styles.flowerContainer}>
+        {[1, 2, 3, 4].map((i) => (
+          <Image key={i} source={require('../assets/images/sakura.svg')} style={styles.flower} />
+        ))}
+      </View>
     </View>
   );
 }
+
+// Styles CSS-in-JS
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -164,8 +178,7 @@ const styles = StyleSheet.create({
     marginTop: 100,
   },
   emojis: {
-//J'ai laissé vide ici au cas où on a besoin de modifier quelques choses chez les emojis.
-//Ne pas faire width et height ça croppe les images on en a pas besoin.
+    // Styles optionnels pour les emojis
   },
   question: {
     fontSize: 24,
@@ -220,5 +233,50 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
   },
-  
 });
+
+/******************************************************
+ * EXPLICATION DES GRANDS PRINCIPES DE CE COMPOSANT   *
+ ******************************************************
+
+1. GESTION D'ÉTAT:
+   - Utilisation de useState pour gérer:
+     * La question actuelle (currentQuestion)
+     * Le temps restant (timeLeft)
+     * L'affichage de la réponse (showAnswer)
+   - useEffect pour le timer qui décrémente timeLeft chaque seconde
+
+2. LOGIQUE DE JEU:
+   - Données du quiz stockées dans QUIZ_DATA
+   - Timer de 15 secondes par question
+   - Affichage automatique de la réponse quand le temps est écoulé
+   - Navigation entre questions avec nextQuestion()
+
+3. AFFICHAGE CONDITIONNEL:
+   - Deux vues distinctes selon showAnswer:
+     * Vue question: emojis + timer
+     * Vue réponse: image + titre + bouton NEXT
+   - Transition automatique quand timeLeft atteint 0
+
+4. NAVIGATION:
+   - Bouton back pour retourner à l'écran précédent
+   - Bouton settings accessible pendant le jeu
+   - Retour à l'accueil quand le quiz est terminé
+
+5. STYLING ET UI:
+   - Adaptation multi-plateforme (web/mobile)
+   - Style cohérent avec l'application (couleurs pastel)
+   - Fleurs décoratives en bas de page
+   - Timer visuel sous forme de cercle coloré
+
+6. COMPOSANTS REUTILISABLES:
+   - Header avec boutons de navigation
+   - Container pour les emojis
+   - Bouton NEXT stylisé
+   - Image de réponse avec bord arrondi
+
+7. GESTION DES DONNÉES:
+   - Images chargées depuis les assets locaux
+   - Image de réponse chargée depuis une URL
+   - Mapping des emojis pour un affichage dynamique
+*/

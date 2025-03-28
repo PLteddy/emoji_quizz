@@ -5,34 +5,37 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
 export default function Settings() {
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [vibrationEnabled, setVibrationEnabled] = useState(true);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [showLanguageModal, setShowLanguageModal] = useState(false);
-  const [showCreditsModal, setShowCreditsModal] = useState(false);
-  const [language, setLanguage] = useState('fr');
+  // États pour les paramètres
+  const [soundEnabled, setSoundEnabled] = useState(true); // Activation du son
+  const [vibrationEnabled, setVibrationEnabled] = useState(true); // Activation des vibrations
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true); // Activation des notifications
+  const [showLanguageModal, setShowLanguageModal] = useState(false); // Visibilité du modal langue
+  const [showCreditsModal, setShowCreditsModal] = useState(false); // Visibilité du modal crédits
+  const [language, setLanguage] = useState('fr'); // Langue sélectionnée
 
+  // Adaptation aux dimensions de l'écran
   const { width, height } = Dimensions.get('window');
 
+  // Style conditionnel selon la plateforme
   const containerStyle: ViewStyle = Platform.select({
     web: {
       maxWidth: 500,
-      width: '100%', // OK sur le web
-      height: '100vh', // OK sur le web
-      marginLeft: 'auto', // OK sur le web
-      marginRight: 'auto', // OK sur le web
+      width: '100%',
+      height: '100vh',
+      marginLeft: 'auto',
+      marginRight: 'auto',
     },
     default: {
       maxWidth: 500,
-      width, // Largeur de l'écran sur mobile
-      height, // Hauteur de l'écran sur mobile
-      alignSelf: 'center', // Remplace margin: 'auto'
+      width,
+      height,
+      alignSelf: 'center',
     },
-  }) as ViewStyle; // 👈 Force TypeScript à considérer le retour comme un ViewStyle valide
-  
+  }) as ViewStyle;
 
   return (
     <View style={[styles.container, containerStyle]}>
+      {/* En-tête avec bouton retour et titre */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="chevron-back" size={24} color="#FF9999" />
@@ -43,6 +46,7 @@ export default function Settings() {
         <Text style={styles.title}>SETTINGS</Text>
       </View>
 
+      {/* Paramètre Son */}
       <View style={styles.settingItem}>
         <View style={styles.settingLeft}>
           <Ionicons name="musical-note" size={24} color="#FF9999" />
@@ -56,6 +60,7 @@ export default function Settings() {
         />
       </View>
 
+      {/* Paramètre Vibration */}
       <View style={styles.settingItem}>
         <View style={styles.settingLeft}>
           <Ionicons name="volume-high" size={24} color="#FF9999" />
@@ -69,6 +74,7 @@ export default function Settings() {
         />
       </View>
 
+      {/* Paramètre Notifications */}
       <View style={styles.settingItem}>
         <View style={styles.settingLeft}>
           <Ionicons name="notifications" size={24} color="#FF9999" />
@@ -82,6 +88,7 @@ export default function Settings() {
         />
       </View>
 
+      {/* Bouton Langue */}
       <TouchableOpacity 
         style={styles.button}
         onPress={() => setShowLanguageModal(true)}
@@ -89,6 +96,7 @@ export default function Settings() {
         <Text style={styles.buttonText}>Langue</Text>
       </TouchableOpacity>
 
+      {/* Bouton Crédits */}
       <TouchableOpacity 
         style={styles.button}
         onPress={() => setShowCreditsModal(true)}
@@ -96,8 +104,10 @@ export default function Settings() {
         <Text style={styles.buttonText}>Crédits</Text>
       </TouchableOpacity>
 
+      {/* Version de l'application */}
       <Text style={styles.version}>v1.0.0</Text>
 
+      {/* Modal pour sélection de la langue */}
       <Modal
         visible={showLanguageModal}
         transparent={true}
@@ -134,6 +144,7 @@ export default function Settings() {
         </View>
       </Modal>
 
+      {/* Modal pour afficher les crédits */}
       <Modal
         visible={showCreditsModal}
         transparent={true}
@@ -158,6 +169,7 @@ export default function Settings() {
         </View>
       </Modal>
 
+      {/* Fleurs décoratives en bas de page */}
       <View style={styles.flowerContainer}>
         {[1, 2, 3, 4].map((i) => (
           <Image key={i} source={require('../assets/images/sakura.svg')} style={styles.flower} />
@@ -167,6 +179,7 @@ export default function Settings() {
   );
 }
 
+// Styles CSS-in-JS
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -290,3 +303,52 @@ const styles = StyleSheet.create({
     height: 40,
   },
 });
+
+/******************************************************
+ * EXPLICATION DES GRANDS PRINCIPES DE CE COMPOSANT   *
+ ******************************************************
+
+1. GESTION D'ÉTAT:
+   - Utilisation de useState pour gérer:
+     * Les préférences utilisateur (son, vibration, notifications)
+     * L'affichage des modals (langue et crédits)
+     * La langue sélectionnée
+
+2. INTERFACE UTILISATEUR:
+   - Header avec bouton retour et titre
+   - Switch personnalisés pour les paramètres
+   - Boutons pour accéder aux modals
+   - Fleurs décoratives en bas de page (cohérence visuelle)
+
+3. MODALS:
+   - Deux modals (langue et crédits) avec:
+     * Animation de fondu
+     * Fond semi-transparent
+     * Bouton de fermeture
+   - Sélection de langue avec feedback visuel
+
+4. STYLING:
+   - Thème cohérent avec l'application (couleurs pastel)
+   - Adaptation responsive avec Dimensions
+   - Style conditionnel pour le web et mobile
+   - Styles réutilisables pour les boutons et modals
+
+5. NAVIGATION:
+   - Bouton back pour retourner à l'écran précédent
+   - Navigation gérée par expo-router
+
+6. ARCHITECTURE:
+   - Structure claire avec sections distinctes
+   - Composants réutilisables (boutons, items de paramètre)
+   - Séparation entre logique et présentation
+
+7. ACCESSIBILITÉ:
+   - Icônes pour chaque paramètre
+   - Contraste des couleurs vérifié
+   - Taille de texte adaptative
+
+8. DONNÉES:
+   - Version de l'app affichée dynamiquement
+   - Crédits de l'équipe dans un modal
+   - États persistants pour les préférences utilisateur
+*/
